@@ -3,42 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Research Methods Study App</title>
+    <title>Comprehensive Research Methods App</title>
     <style>
         :root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; --card: #ffffff; --success: #16a34a; --error: #dc2626; }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
-        header { background: var(--primary); color: white; padding: 1rem 2rem; text-align: center; }
-        nav { display: flex; justify-content: center; gap: 1rem; background: #1e40af; padding: 0.5rem; }
-        button { background: white; color: var(--primary); border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        header { background: var(--primary); color: white; padding: 1.5rem 2rem; text-align: center; }
+        nav { display: flex; justify-content: center; gap: 1rem; background: #1e40af; padding: 0.75rem; flex-wrap: wrap; }
+        button { background: white; color: var(--primary); border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; font-size: 1rem; }
         button:hover { background: #e2e8f0; }
         .container { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
         .section { display: none; }
         .section.active { display: block; }
-        .card { background: var(--card); padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); margin-bottom: 1rem; }
+        .card { background: var(--card); padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); margin-bottom: 1rem; }
+        
         /* Flashcards */
-        .flashcard { cursor: pointer; perspective: 1000px; height: 200px; margin-bottom: 1rem; }
-        .flashcard-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flashcard { cursor: pointer; perspective: 1000px; min-height: 250px; margin-bottom: 1rem; }
+        .flashcard-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; min-height: 250px; }
         .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
-        .flashcard-front, .flashcard-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; padding: 1rem; box-sizing: border-box; background: var(--card); border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 2px solid var(--primary); }
+        .flashcard-front, .flashcard-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; box-sizing: border-box; background: var(--card); border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 2px solid var(--primary); overflow-y: auto; }
         .flashcard-back { transform: rotateY(180deg); background: #f0fdf4; border-color: var(--success); }
-        .controls { display: flex; justify-content: space-between; margin-top: 1rem; }
+        .flashcard-front h3 { margin: 0; font-size: 1.5rem; }
+        .flashcard-back p { margin: 0; font-size: 1.1rem; line-height: 1.5; }
+        .controls { display: flex; justify-content: space-between; margin-top: 1rem; flex-wrap: wrap; gap: 0.5rem; }
         .btn-action { background: var(--primary); color: white; }
+        .btn-action:hover { background: #1d4ed8; color: white; }
+        
         /* Quiz */
-        .quiz-option { display: block; width: 100%; text-align: left; background: #f1f5f9; margin: 0.5rem 0; padding: 1rem; border: 1px solid #cbd5e1; color: var(--text); font-weight: normal; }
-        .quiz-option:hover { background: #e2e8f0; }
-        .quiz-option.correct { background: #dcfce7; border-color: var(--success); }
+        .quiz-option { display: block; width: 100%; text-align: left; background: #f1f5f9; margin: 0.5rem 0; padding: 1rem; border: 1px solid #cbd5e1; color: var(--text); font-weight: normal; font-size: 1rem; border-radius: 4px; }
+        .quiz-option:hover:not(:disabled) { background: #e2e8f0; }
+        .quiz-option:disabled { cursor: default; }
+        .quiz-option.correct { background: #dcfce7; border-color: var(--success); font-weight: bold; }
         .quiz-option.wrong { background: #fee2e2; border-color: var(--error); }
-        .feedback { margin-top: 1rem; padding: 1rem; border-radius: 4px; display: none; }
+        .feedback { margin-top: 1.5rem; padding: 1rem; border-radius: 4px; display: none; line-height: 1.5; }
         .stats { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem; }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Research Methods Master App</h1>
+    <h1>Research Methods Study Resource</h1>
+    <p style="margin-top: 0.5rem; font-weight: normal;">Complete Offline Preparation Suite</p>
 </header>
 <nav>
-    <button onclick="showSection('flashcards')">Flashcards</button>
+    <button onclick="showSection('flashcards')">Interactive Flashcards</button>
     <button onclick="showSection('quiz')">Practice Quiz</button>
     <button onclick="showSection('progress')">My Progress</button>
 </nav>
@@ -46,30 +53,30 @@
 <div class="container">
     <!-- Flashcards Section -->
     <div id="flashcards" class="section active">
-        <h2>Interactive Flashcards</h2>
+        <h2>Concept Mastery</h2>
         <div class="stats">Card <span id="fc-current">1</span> of <span id="fc-total"></span></div>
         <div class="flashcard" onclick="flipCard()">
             <div class="flashcard-inner" id="fc-inner">
-                <div class="flashcard-front"><h3 id="fc-q">Question</h3></div>
+                <div class="flashcard-front"><h3 id="fc-q">Question</h3><p style="margin-top: 1rem; color: #64748b; font-size: 0.9rem;">(Click to flip)</p></div>
                 <div class="flashcard-back"><p id="fc-a">Answer</p></div>
             </div>
         </div>
         <div class="controls">
-            <button class="btn-action" onclick="prevCard()">Previous</button>
-            <button class="btn-action" style="background: var(--success);" onclick="markMastered()">Mark as Mastered</button>
-            <button class="btn-action" onclick="nextCard()">Next</button>
+            <button class="btn-action" onclick="prevCard()">&#8592; Previous</button>
+            <button class="btn-action" style="background: var(--success);" onclick="markMastered()">&#10003; Mark as Mastered</button>
+            <button class="btn-action" onclick="nextCard()">Next &#8594;</button>
         </div>
     </div>
 
     <!-- Quiz Section -->
     <div id="quiz" class="section">
-        <h2>Practice Quiz</h2>
+        <h2>Exam Simulation</h2>
         <div class="stats">Score: <span id="quiz-score">0</span> / <span id="quiz-total"></span></div>
         <div class="card" id="quiz-container">
-            <h3 id="quiz-q">Question text</h3>
+            <h3 id="quiz-q" style="line-height: 1.4; margin-top: 0;">Question text</h3>
             <div id="quiz-options"></div>
             <div id="quiz-feedback" class="feedback"></div>
-            <button class="btn-action" id="next-quiz-btn" style="margin-top: 1rem; display: none;" onclick="nextQuiz()">Next Question</button>
+            <button class="btn-action" id="next-quiz-btn" style="margin-top: 1.5rem; display: none; width: 100%;" onclick="nextQuiz()">Next Question</button>
         </div>
     </div>
 
@@ -77,24 +84,44 @@
     <div id="progress" class="section">
         <h2>Study Dashboard</h2>
         <div class="card">
-            <h3>Flashcard Mastery</h3>
-            <p>Mastered: <span id="prog-fc">0</span> / <span id="prog-fc-tot">0</span></p>
-            <button class="btn-action" onclick="resetProgress()">Reset All Progress</button>
+            <h3>Flashcard Progress</h3>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem;">Cards Mastered: <strong><span id="prog-fc">0</span> / <span id="prog-fc-tot">0</span></strong></p>
+            
+            <h3>Quiz Progress</h3>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem;">Current Score: <strong><span id="prog-quiz">0</span></strong></p>
+            
+            <button class="btn-action" style="background: var(--error);" onclick="resetProgress()">Reset All Progress Data</button>
         </div>
     </div>
 </div>
 
 <script>
     const flashcardsData = [
-        { q: "What is the etymological root of 'Research'?", a: "From Latin 're' (again) and 'search' (to examine closely), meaning to search repeatedly or systematically." },
-        { q: "Define 'Methodology' vs 'Method'.", a: "Method is the practical operational tool (e.g., survey). Methodology is the overarching theoretical framework and philosophical justification for using that tool." },
-        { q: "What are the 5 characteristics of Research?", a: "Controlled, Rigorous, Systematic, Empirical, and Critical." },
-        { q: "What is Ontology?", a: "The branch of philosophy concerned with the nature of reality (whether it is objective/independent or socially constructed)." },
-        { q: "What is Epistemology?", a: "Addresses what constitutes valid knowledge and the mechanisms through which we acquire it (e.g., Positivism vs Interpretivism)." },
-        { q: "Describe the Deductive approach.", a: "A top-down logic moving from a general theory to hypotheses, empirical observations, and confirmation/rejection." },
-        { q: "Describe the Abductive approach.", a: "An inference to the best explanation. Starts with an unexpected anomaly and aims to infer the single most plausible rational explanation." },
-        { q: "What are the core features of Qualitative research?", a: "Inductive logic, narrative/word data, small purposeful samples, aimed at understanding 'why' and 'how'." },
-        { q: "What was the empirical finding regarding CSR in the study?", a: "CSR initiatives improved bank profit efficiency by 2.95% over time, acting as a strategic long-term capital investment rather than an immediate operational expense." }
+        { q: "What is the etymological root of 'Research'?", a: "Derived from the Latin 're' (again) and 'search' (to examine closely), meaning to search repeatedly or systematically modify existing knowledge[cite: 2, 3]." },
+        { q: "How is 'Research' defined in social sciences and business?", a: "A logical and systematic search for new, useful information on a specific topic. It is a structured way of thinking about professional problems[cite: 2, 3]." },
+        { q: "What are the 8 Core Actions conducted via research?", a: "Categorize, Describe, Explain, Evaluate, Compare, Correlate, Predict, and Control[cite: 3]." },
+        { q: "What are the 10 core principles of Scientific Research?", a: "1. Clear question/hypothesis. 2. Systematic method. 3. Objectivity. 4. Testable. 5. Empirical evidence. 6. Reproducibility. 7. Transparency. 8. Logical reasoning. 9. Peer review. 10. Ethical standards[cite: 3, 7]." },
+        { q: "What are the 5 core characteristics of Research?", a: "Controlled, Rigorous, Systematic, Empirical, and Critical[cite: 2, 3, 8]." },
+        { q: "Define a 'Technique' in the research hierarchy.", a: "The most practical, granular level. It is a specific, bureaucratic mechanical procedure or skill utilized to execute exact operational tasks[cite: 2, 3]." },
+        { q: "Define a 'Method' in the research hierarchy.", a: "A specific tactical, operational tool or procedure utilized to collect, measure, sample, and analyze data (e.g., surveys, interviews, regression analysis)[cite: 1, 2, 3, 6]." },
+        { q: "Define 'Methodology' in the research hierarchy.", a: "The overarching strategic blueprint, theoretical rationale, philosophical framework, and paradigm that justifies the selection of specific methods and guides the study[cite: 1, 2, 3, 6]." },
+        { q: "What is the 'Interchangeability Error' in academic literature?", a: "Conflating a practical data-gathering tool (Method) with its theoretical rationale (Methodology). They are not synonymous and using them interchangeably creates conceptual imprecision[cite: 2, 3]." },
+        { q: "What is Exploratory (Formulative) Research?", a: "Conducted to gain familiarity with a phenomenon or achieve new insights into a previously unmapped area. It is NOT used to test existing causal hypotheses with strict controls[cite: 1, 2, 3]." },
+        { q: "What is Descriptive Research?", a: "Seeks to accurately detail and portray the specific characteristics of an individual, situation, group, or phenomenon[cite: 2, 3]." },
+        { q: "What is Diagnostic Research?", a: "Focuses on calculating the frequency with which an event occurs or how frequently it associates with another phenomenon[cite: 2, 3]." },
+        { q: "What is Explanatory (Hypothesis-Testing) Research?", a: "Designed to strictly test hypotheses regarding a causal relationship between two or more variables[cite: 2, 3]." },
+        { q: "What is Ontology?", a: "The branch of philosophy that addresses the question: 'What is the nature of reality?' (e.g., whether reality is objective/independent or socially constructed)[cite: 2, 3]." },
+        { q: "What is Epistemology?", a: "Concerned exclusively with what constitutes valid knowledge and the exact mechanisms through which it is acquired[cite: 1, 2, 3]." },
+        { q: "What is Axiology?", a: "Addresses the role that personal values and ethics play within the inquiry[cite: 2, 3]." },
+        { q: "What is the 'Value-free / Independence' axiological stance?", a: "The researcher remains entirely independent and impartial, ensuring personal biases or moral judgments do not influence data collection or interpretation[cite: 2, 3]." },
+        { q: "Name the 5 Phases of the Research Process.", a: "1. Conceptual Phase. 2. Design & Planning Phase. 3. Empirical Phase. 4. Analytic Phase. 5. Dissemination Phase[cite: 2, 3]." },
+        { q: "Describe the Deductive Approach.", a: "A 'top-down' logic moving from a general theory to hypotheses, empirical observation, and ending with confirmation/rejection. Used to test existing theories[cite: 1, 2, 3, 4, 6]." },
+        { q: "Describe the Inductive Approach.", a: "A 'bottom-up' logic beginning with specific empirical observations, detecting patterns, and building new broad theoretical generalizations[cite: 1, 2, 3, 4, 6]." },
+        { q: "Describe the Abductive Approach.", a: "An inference to the best explanation. Starts with an unexpected anomaly (inductive spark) and uses theoretical framing to infer the single most plausible rational explanation[cite: 1, 2, 3, 4]." },
+        { q: "What characterizes Quantitative Research?", a: "Numerical data, statistical analysis, deductive theory testing, and large representative sampling frames[cite: 1, 2, 3, 5, 6]." },
+        { q: "What characterizes Qualitative Research?", a: "Non-numerical data (words, narratives), inductive logic, small purposeful samples, exploring subjective behaviors to understand 'why' and 'how'[cite: 1, 2, 3, 5, 6]." },
+        { q: "What is Mixed Methods Research?", a: "Integrates qualitative and quantitative approaches sequentially or concurrently to achieve comprehensive triangulation of data[cite: 1, 2, 3, 5]." },
+        { q: "What were the empirical findings and theoretical insights of the CSR case study?", a: "CSR improved bank profit efficiency by 2.95% over time. Theoretically, it reconceptualized CSR from a basic operational expense into a strategic, long-term capital investment[cite: 2, 3, 6]." }
     ];
 
     const quizData = [
@@ -102,35 +129,124 @@
             q: "Which construct refers to the specific operational tools, procedures, and techniques used to collect, sample, and analyze data?",
             options: ["Research Paradigm", "Methodology", "Research Method", "Epistemology"],
             ans: 2,
-            exp: "A 'Method' is the practical operational tool (like a survey or regression model), while Methodology is the theoretical framework."
+            exp: "A 'Method' is a specific operational technique or tool used to collect and analyze data.[cite: 1, 2, 3]"
+        },
+        {
+            q: "Which construct provides the theoretical rationale and philosophical justification governing a research design?",
+            options: ["Method", "Approach", "Methodology", "Theory"],
+            ans: 2,
+            exp: "Methodology is the overarching philosophical framework and rationale justifying the research design.[cite: 1, 2, 3]"
+        },
+        {
+            q: "When classified by the nature of the data utilized, which categories represent the primary methodological choices?",
+            options: ["Exploratory, Descriptive, and Diagnostic", "Ontology, Epistemology, and Axiology", "Quantitative, Qualitative, and Mixed Methods", "Structured, Semi-structured, and Unstructured"],
+            ans: 2,
+            exp: "By nature of data, approaches are Qualitative (words), Quantitative (numbers), or Mixed.[cite: 1, 3]"
+        },
+        {
+            q: "How does research primarily enhance managerial decision-making?",
+            options: ["By eliminating the need for human judgment", "By guaranteeing 100% profit in every scenario", "By generating viable solutions to identified problems", "By replacing qualitative discussions with rigid rules"],
+            ans: 2,
+            exp: "Research enhances decision-making by generating viable alternative solutions to resolve identified problems.[cite: 1, 2, 3]"
+        },
+        {
+            q: "How are research approaches categorized by logical inference?",
+            options: ["Quantitative, Qualitative, and Mixed Methods", "Deductive, Inductive, and Abductive", "Exploratory, Descriptive, and Causal", "Conceptual, Empirical, and Analytic"],
+            ans: 1,
+            exp: "By logical inference, approaches are divided into Deductive (top-down), Inductive (bottom-up), and Abductive (best explanation).[cite: 1, 3]"
         },
         {
             q: "True or False: Exploratory research is primarily conducted when a researcher needs to test an existing causal hypothesis with strict statistical controls.",
             options: ["True", "False"],
             ans: 1,
-            exp: "False. Exploratory research aims to gain familiarity with a phenomenon or achieve new insights, not to test existing hypotheses with strict controls."
+            exp: "False. Exploratory research is conducted to gain familiarity with a phenomenon or achieve new insights, not to test hypotheses with strict controls.[cite: 1, 2, 3]"
         },
         {
-            q: "Which research approach follows a 'bottom-up' logic beginning with specific real-world observations and building toward general theories?",
-            options: ["Deductive", "Inductive", "Abductive", "Positivist"],
+            q: "True or False: Epistemology addresses the role of researcher ethics, personal morals, and personal values in research inquiry.",
+            options: ["True", "False"],
             ans: 1,
-            exp: "Inductive reasoning builds new theories bottom-up from specific empirical data."
+            exp: "False. Epistemology addresses what constitutes valid knowledge and how we acquire it. Axiology addresses ethics and values.[cite: 1, 2, 3]"
         },
         {
-            q: "In the research hierarchy, what occupies the most practical, granular level, executing the exact mechanical steps within a method?",
-            options: ["Methodology", "Technique", "Paradigm", "Ontology"],
-            ans: 1,
-            exp: "A Technique is a specific, bureaucratic mechanical procedure or skill used to perform concrete operational tasks."
-        },
-        {
-            q: "According to the empirical CSR study, what was the impact of CSR on commercial bank profit efficiency?",
-            options: ["Zero measurable impact", "Immediate 15.4% drop", "Improved profit efficiency by 2.95% over time", "Improved efficiency for start-ups only"],
+            q: "Which term occupies the most practical, granular level of the research hierarchy, executing the exact mechanical steps within a method?",
+            options: ["Paradigm", "Methodology", "Technique", "Epistemology"],
             ans: 2,
-            exp: "CSR improved profit efficiency by 2.95%, but the benefits accumulated over time and were stronger for older, established firms."
+            exp: "A Technique is the specific, bureaucratic mechanical procedure or skill executing the exact steps of a method.[cite: 2, 3]"
+        },
+        {
+            q: "Determining the frequency with which an event occurs or with which it is associated with another phenomenon is the core objective of:",
+            options: ["Exploratory research", "Diagnostic research", "Speculative research", "Inductive philosophy"],
+            ans: 1,
+            exp: "Diagnostic research focuses on calculating the frequency of a phenomenon or its association with other factors.[cite: 2, 3]"
+        },
+        {
+            q: "Which branch of research philosophy addresses the fundamental question: 'What is the nature of reality?'",
+            options: ["Epistemology", "Axiology", "Ontology", "Teleology"],
+            ans: 2,
+            exp: "Ontology addresses the nature of reality (objective/realist vs subjective/constructivist).[cite: 2, 3]"
+        },
+        {
+            q: "A researcher who maintains complete independence, neutrality, and ensures personal biases do not influence data collection is demonstrating which axiological stance?",
+            options: ["Value-laden", "Value-free / Independence", "Subjective constructivism", "Relativism"],
+            ans: 1,
+            exp: "A value-free/independence stance ensures the researcher remains impartial and personal values do not influence the study.[cite: 2, 3]"
+        },
+        {
+            q: "In the five phases of the research process, which phase encompasses research design selection and sampling strategy formulation?",
+            options: ["Phase 1: Conceptual Phase", "Phase 2: Design & Planning Phase", "Phase 3: Empirical Phase", "Phase 4: Analytic Phase"],
+            ans: 1,
+            exp: "Phase 2 (Design & Planning) involves selecting the research design and sampling strategy.[cite: 2, 3]"
+        },
+        {
+            q: "An investigator observes that cleaning product commercials featuring humor achieve 100% completion rates, leading to a new general theory of 'Humor-Shielding'. This illustrates which approach?",
+            options: ["Deductive reasoning", "Inductive reasoning", "Positivist testing", "Axiological neutrality"],
+            ans: 1,
+            exp: "This is Inductive reasoning: starting with specific real-world observations and building up to a new general theory.[cite: 2, 3]"
+        },
+        {
+            q: "A creative team halts all idea generation. The manager uses theory to infer that public criticism was the most rational explanation. This reasoning is known as:",
+            options: ["Pure deduction", "Abductive reasoning", "Grounded theory emergence", "Statistical error variance"],
+            ans: 1,
+            exp: "Abductive reasoning is the inference to the best explanation, starting with an anomaly and testing for the most rational cause.[cite: 2, 3]"
+        },
+        {
+            q: "Which of the following correctly pairs the research approach with its primary methodological characteristics?",
+            options: ["Quantitative: words & narratives; Inductive reasoning", "Qualitative: numerical measurements; Deductive reasoning", "Quantitative: numerical & statistical; Deductive testing", "Mixed Methods: excludes numerical data completely"],
+            ans: 2,
+            exp: "Quantitative research relies on numerical/statistical data and follows deductive theory testing.[cite: 2, 3, 5, 6]"
+        },
+        {
+            q: "In an investigation of Cloud Accounting adoption, why would a researcher integrate qualitative interviews and quantitative surveys?",
+            options: ["Because universities forbid single methods", "To achieve triangulation, measuring time savings mathematically while uncovering reasons for human resistance narratively", "To eliminate the need for sampling frames", "Because qualitative data cannot be analyzed"],
+            ans: 1,
+            exp: "Mixed methods are used for triangulation, integrating numerical verification with narrative context.[cite: 2, 3]"
+        },
+        {
+            q: "According to the presented empirical research, what was the direct impact of Corporate Social Responsibility (CSR) on commercial bank profit efficiency?",
+            options: ["CSR caused an immediate 15.4% drop in revenue", "CSR improved bank profit efficiency by 2.95% over time", "CSR had zero measurable impact", "CSR improved efficiency for newly founded start-ups only"],
+            ans: 1,
+            exp: "CSR improved profit efficiency by 2.95%, accumulating over time, and was more effective for older firms.[cite: 2, 3]"
+        },
+        {
+            q: "Which core takeaway regarding Corporate Social Responsibility (CSR) was emphasized in the presentation's concluding study?",
+            options: ["Treat CSR as a short-term promotional gimmick", "Limit social disclosures strictly to the bare minimum", "Reconceptualize CSR as a strategic long-term capital investment", "Allocate CSR spending exclusively to television commercials"],
+            ans: 2,
+            exp: "The study emphasized reconceptualizing CSR as a strategic, long-term capital investment that builds trust and brand equity.[cite: 2, 3]"
+        },
+        {
+            q: "True or False: Scientific reproducibility means that other independent researchers should be able to follow documented procedures and obtain similar results.",
+            options: ["True", "False"],
+            ans: 0,
+            exp: "True. Reproducibility is a core requirement of scientific research allowing others to verify findings.[cite: 2, 3, 7]"
+        },
+        {
+            q: "True or False: The 'Controlled' characteristic of research refers to regulating and isolating external variables so that true causal relationships can be established.",
+            options: ["True", "False"],
+            ans: 0,
+            exp: "True. Control isolates external factors to ensure accurate causal relationships are established.[cite: 2, 3, 8]"
         }
     ];
 
-    let currentSection = 'flashcards';
     let fcIndex = 0;
     let quizIndex = 0;
     let score = parseInt(localStorage.getItem('quizScore')) || 0;
@@ -147,8 +263,8 @@
         document.getElementById('fc-inner').parentElement.classList.remove('flipped');
         document.getElementById('fc-current').innerText = fcIndex + 1;
         document.getElementById('fc-total').innerText = flashcardsData.length;
-        document.getElementById('fc-q').innerText = flashcardsData[fcIndex].q;
-        document.getElementById('fc-a').innerText = flashcardsData[fcIndex].a;
+        document.getElementById('fc-q').innerHTML = flashcardsData[fcIndex].q;
+        document.getElementById('fc-a').innerHTML = flashcardsData[fcIndex].a;
     }
     function flipCard() { document.getElementById('fc-inner').parentElement.classList.toggle('flipped'); }
     function nextCard() { fcIndex = (fcIndex + 1) % flashcardsData.length; loadFC(); }
@@ -157,9 +273,9 @@
         if (!masteredCards.includes(fcIndex)) {
             masteredCards.push(fcIndex);
             localStorage.setItem('masteredFC', JSON.stringify(masteredCards));
-            alert("Card marked as mastered!");
         }
         nextCard();
+        updateDashboard();
     }
 
     // Quiz Logic
@@ -167,7 +283,7 @@
         const qData = quizData[quizIndex];
         document.getElementById('quiz-total').innerText = quizData.length;
         document.getElementById('quiz-score').innerText = score;
-        document.getElementById('quiz-q').innerText = qData.q;
+        document.getElementById('quiz-q').innerText = `${quizIndex + 1}. ${qData.q}`;
         const optsContainer = document.getElementById('quiz-options');
         optsContainer.innerHTML = '';
         qData.options.forEach((opt, idx) => {
@@ -180,10 +296,11 @@
         document.getElementById('quiz-feedback').style.display = 'none';
         document.getElementById('next-quiz-btn').style.display = 'none';
     }
+    
     function checkAnswer(selectedIdx, btn) {
         const qData = quizData[quizIndex];
         const opts = document.querySelectorAll('.quiz-option');
-        opts.forEach(b => b.onclick = null); // Disable clicking
+        opts.forEach(b => { b.onclick = null; b.disabled = true; }); 
         
         const feedback = document.getElementById('quiz-feedback');
         feedback.style.display = 'block';
@@ -191,47 +308,66 @@
         if (selectedIdx === qData.ans) {
             btn.classList.add('correct');
             feedback.style.backgroundColor = '#dcfce7';
-            feedback.innerHTML = `<strong>Correct!</strong> ${qData.exp}`;
+            feedback.style.color = 'var(--success)';
+            feedback.style.border = '1px solid var(--success)';
+            feedback.innerHTML = `<strong>Correct!</strong> <br><br> ${qData.exp}`;
             score++;
             localStorage.setItem('quizScore', score);
         } else {
             btn.classList.add('wrong');
             opts[qData.ans].classList.add('correct');
             feedback.style.backgroundColor = '#fee2e2';
-            feedback.innerHTML = `<strong>Incorrect.</strong> ${qData.exp}`;
+            feedback.style.color = 'var(--error)';
+            feedback.style.border = '1px solid var(--error)';
+            feedback.innerHTML = `<strong>Incorrect.</strong> <br><br> ${qData.exp}`;
         }
         document.getElementById('quiz-score').innerText = score;
         document.getElementById('next-quiz-btn').style.display = 'block';
+        updateDashboard();
     }
+    
     function nextQuiz() {
         quizIndex++;
         if (quizIndex < quizData.length) {
             loadQuiz();
         } else {
-            document.getElementById('quiz-container').innerHTML = `<h3>Quiz Complete!</h3><p>Final Score: ${score} / ${quizData.length}</p><button class="btn-action" onclick="resetQuiz()">Restart Quiz</button>`;
+            document.getElementById('quiz-container').innerHTML = `
+                <h3 style="text-align:center; font-size: 1.5rem; color: var(--primary);">Exam Complete!</h3>
+                <p style="text-align:center; font-size: 1.2rem;">Final Score: <strong>${score} / ${quizData.length}</strong></p>
+                <button class="btn-action" style="width: 100%; margin-top: 1.5rem;" onclick="resetQuiz()">Retake Exam</button>`;
         }
     }
+    
     function resetQuiz() {
         quizIndex = 0;
         score = 0;
         localStorage.setItem('quizScore', score);
-        location.reload();
+        loadQuiz();
+        updateDashboard();
     }
 
     // Dashboard
     function updateDashboard() {
         document.getElementById('prog-fc').innerText = masteredCards.length;
         document.getElementById('prog-fc-tot').innerText = flashcardsData.length;
+        document.getElementById('prog-quiz').innerText = score;
     }
+    
     function resetProgress() {
-        localStorage.clear();
-        score = 0;
-        masteredCards = [];
-        alert("Progress reset.");
-        location.reload();
+        if(confirm("Are you sure you want to delete all study progress? This cannot be undone.")) {
+            localStorage.clear();
+            score = 0;
+            masteredCards = [];
+            quizIndex = 0;
+            fcIndex = 0;
+            loadFC();
+            loadQuiz();
+            updateDashboard();
+            alert("All progress has been reset.");
+        }
     }
 
-    // Init
+    // Initialization
     loadFC();
     loadQuiz();
     updateDashboard();
