@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Methods Study App</title>
+    <style>
+        :root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; --card: #ffffff; --success: #16a34a; --error: #dc2626; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; }
+        header { background: var(--primary); color: white; padding: 1rem 2rem; text-align: center; }
+        nav { display: flex; justify-content: center; gap: 1rem; background: #1e40af; padding: 0.5rem; }
+        button { background: white; color: var(--primary); border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        button:hover { background: #e2e8f0; }
+        .container { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .card { background: var(--card); padding: 1.5rem; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); margin-bottom: 1rem; }
+        /* Flashcards */
+        .flashcard { cursor: pointer; perspective: 1000px; height: 200px; margin-bottom: 1rem; }
+        .flashcard-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flashcard.flipped .flashcard-inner { transform: rotateY(180deg); }
+        .flashcard-front, .flashcard-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; padding: 1rem; box-sizing: border-box; background: var(--card); border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); border: 2px solid var(--primary); }
+        .flashcard-back { transform: rotateY(180deg); background: #f0fdf4; border-color: var(--success); }
+        .controls { display: flex; justify-content: space-between; margin-top: 1rem; }
+        .btn-action { background: var(--primary); color: white; }
+        /* Quiz */
+        .quiz-option { display: block; width: 100%; text-align: left; background: #f1f5f9; margin: 0.5rem 0; padding: 1rem; border: 1px solid #cbd5e1; color: var(--text); font-weight: normal; }
+        .quiz-option:hover { background: #e2e8f0; }
+        .quiz-option.correct { background: #dcfce7; border-color: var(--success); }
+        .quiz-option.wrong { background: #fee2e2; border-color: var(--error); }
+        .feedback { margin-top: 1rem; padding: 1rem; border-radius: 4px; display: none; }
+        .stats { display: flex; justify-content: space-between; font-size: 1.2rem; font-weight: bold; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Research Methods Master App</h1>
+</header>
+<nav>
+    <button onclick="showSection('flashcards')">Flashcards</button>
+    <button onclick="showSection('quiz')">Practice Quiz</button>
+    <button onclick="showSection('progress')">My Progress</button>
+</nav>
+
+<div class="container">
+    <!-- Flashcards Section -->
+    <div id="flashcards" class="section active">
+        <h2>Interactive Flashcards</h2>
+        <div class="stats">Card <span id="fc-current">1</span> of <span id="fc-total"></span></div>
+        <div class="flashcard" onclick="flipCard()">
+            <div class="flashcard-inner" id="fc-inner">
+                <div class="flashcard-front"><h3 id="fc-q">Question</h3></div>
+                <div class="flashcard-back"><p id="fc-a">Answer</p></div>
+            </div>
+        </div>
+        <div class="controls">
+            <button class="btn-action" onclick="prevCard()">Previous</button>
+            <button class="btn-action" style="background: var(--success);" onclick="markMastered()">Mark as Mastered</button>
+            <button class="btn-action" onclick="nextCard()">Next</button>
+        </div>
+    </div>
+
+    <!-- Quiz Section -->
+    <div id="quiz" class="section">
+        <h2>Practice Quiz</h2>
+        <div class="stats">Score: <span id="quiz-score">0</span> / <span id="quiz-total"></span></div>
+        <div class="card" id="quiz-container">
+            <h3 id="quiz-q">Question text</h3>
+            <div id="quiz-options"></div>
+            <div id="quiz-feedback" class="feedback"></div>
+            <button class="btn-action" id="next-quiz-btn" style="margin-top: 1rem; display: none;" onclick="nextQuiz()">Next Question</button>
+        </div>
+    </div>
+
+    <!-- Progress Section -->
+    <div id="progress" class="section">
+        <h2>Study Dashboard</h2>
+        <div class="card">
+            <h3>Flashcard Mastery</h3>
+            <p>Mastered: <span id="prog-fc">0</span> / <span id="prog-fc-tot">0</span></p>
+            <button class="btn-action" onclick="resetProgress()">Reset All Progress</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const flashcardsData = [
+        { q: "What is the etymological root of 'Research'?", a: "From Latin 're' (again) and 'search' (to examine closely), meaning to search repeatedly or systematically." },
+        { q: "Define 'Methodology' vs 'Method'.", a: "Method is the practical operational tool (e.g., survey). Methodology is the overarching theoretical framework and philosophical justification for using that tool." },
+        { q: "What are the 5 characteristics of Research?", a: "Controlled, Rigorous, Systematic, Empirical, and Critical." },
+        { q: "What is Ontology?", a: "The branch of philosophy concerned with the nature of reality (whether it is objective/independent or socially constructed)." },
+        { q: "What is Epistemology?", a: "Addresses what constitutes valid knowledge and the mechanisms through which we acquire it (e.g., Positivism vs Interpretivism)." },
+        { q: "Describe the Deductive approach.", a: "A top-down logic moving from a general theory to hypotheses, empirical observations, and confirmation/rejection." },
+        { q: "Describe the Abductive approach.", a: "An inference to the best explanation. Starts with an unexpected anomaly and aims to infer the single most plausible rational explanation." },
+        { q: "What are the core features of Qualitative research?", a: "Inductive logic, narrative/word data, small purposeful samples, aimed at understanding 'why' and 'how'." },
+        { q: "What was the empirical finding regarding CSR in the study?", a: "CSR initiatives improved bank profit efficiency by 2.95% over time, acting as a strategic long-term capital investment rather than an immediate operational expense." }
+    ];
+
+    const quizData = [
+        {
+            q: "Which construct refers to the specific operational tools, procedures, and techniques used to collect, sample, and analyze data?",
+            options: ["Research Paradigm", "Methodology", "Research Method", "Epistemology"],
+            ans: 2,
+            exp: "A 'Method' is the practical operational tool (like a survey or regression model), while Methodology is the theoretical framework."
+        },
+        {
+            q: "True or False: Exploratory research is primarily conducted when a researcher needs to test an existing causal hypothesis with strict statistical controls.",
+            options: ["True", "False"],
+            ans: 1,
+            exp: "False. Exploratory research aims to gain familiarity with a phenomenon or achieve new insights, not to test existing hypotheses with strict controls."
+        },
+        {
+            q: "Which research approach follows a 'bottom-up' logic beginning with specific real-world observations and building toward general theories?",
+            options: ["Deductive", "Inductive", "Abductive", "Positivist"],
+            ans: 1,
+            exp: "Inductive reasoning builds new theories bottom-up from specific empirical data."
+        },
+        {
+            q: "In the research hierarchy, what occupies the most practical, granular level, executing the exact mechanical steps within a method?",
+            options: ["Methodology", "Technique", "Paradigm", "Ontology"],
+            ans: 1,
+            exp: "A Technique is a specific, bureaucratic mechanical procedure or skill used to perform concrete operational tasks."
+        },
+        {
+            q: "According to the empirical CSR study, what was the impact of CSR on commercial bank profit efficiency?",
+            options: ["Zero measurable impact", "Immediate 15.4% drop", "Improved profit efficiency by 2.95% over time", "Improved efficiency for start-ups only"],
+            ans: 2,
+            exp: "CSR improved profit efficiency by 2.95%, but the benefits accumulated over time and were stronger for older, established firms."
+        }
+    ];
+
+    let currentSection = 'flashcards';
+    let fcIndex = 0;
+    let quizIndex = 0;
+    let score = parseInt(localStorage.getItem('quizScore')) || 0;
+    let masteredCards = JSON.parse(localStorage.getItem('masteredFC')) || [];
+
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        updateDashboard();
+    }
+
+    // Flashcard Logic
+    function loadFC() {
+        document.getElementById('fc-inner').parentElement.classList.remove('flipped');
+        document.getElementById('fc-current').innerText = fcIndex + 1;
+        document.getElementById('fc-total').innerText = flashcardsData.length;
+        document.getElementById('fc-q').innerText = flashcardsData[fcIndex].q;
+        document.getElementById('fc-a').innerText = flashcardsData[fcIndex].a;
+    }
+    function flipCard() { document.getElementById('fc-inner').parentElement.classList.toggle('flipped'); }
+    function nextCard() { fcIndex = (fcIndex + 1) % flashcardsData.length; loadFC(); }
+    function prevCard() { fcIndex = (fcIndex - 1 + flashcardsData.length) % flashcardsData.length; loadFC(); }
+    function markMastered() {
+        if (!masteredCards.includes(fcIndex)) {
+            masteredCards.push(fcIndex);
+            localStorage.setItem('masteredFC', JSON.stringify(masteredCards));
+            alert("Card marked as mastered!");
+        }
+        nextCard();
+    }
+
+    // Quiz Logic
+    function loadQuiz() {
+        const qData = quizData[quizIndex];
+        document.getElementById('quiz-total').innerText = quizData.length;
+        document.getElementById('quiz-score').innerText = score;
+        document.getElementById('quiz-q').innerText = qData.q;
+        const optsContainer = document.getElementById('quiz-options');
+        optsContainer.innerHTML = '';
+        qData.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = 'quiz-option';
+            btn.innerText = opt;
+            btn.onclick = () => checkAnswer(idx, btn);
+            optsContainer.appendChild(btn);
+        });
+        document.getElementById('quiz-feedback').style.display = 'none';
+        document.getElementById('next-quiz-btn').style.display = 'none';
+    }
+    function checkAnswer(selectedIdx, btn) {
+        const qData = quizData[quizIndex];
+        const opts = document.querySelectorAll('.quiz-option');
+        opts.forEach(b => b.onclick = null); // Disable clicking
+        
+        const feedback = document.getElementById('quiz-feedback');
+        feedback.style.display = 'block';
+        
+        if (selectedIdx === qData.ans) {
+            btn.classList.add('correct');
+            feedback.style.backgroundColor = '#dcfce7';
+            feedback.innerHTML = `<strong>Correct!</strong> ${qData.exp}`;
+            score++;
+            localStorage.setItem('quizScore', score);
+        } else {
+            btn.classList.add('wrong');
+            opts[qData.ans].classList.add('correct');
+            feedback.style.backgroundColor = '#fee2e2';
+            feedback.innerHTML = `<strong>Incorrect.</strong> ${qData.exp}`;
+        }
+        document.getElementById('quiz-score').innerText = score;
+        document.getElementById('next-quiz-btn').style.display = 'block';
+    }
+    function nextQuiz() {
+        quizIndex++;
+        if (quizIndex < quizData.length) {
+            loadQuiz();
+        } else {
+            document.getElementById('quiz-container').innerHTML = `<h3>Quiz Complete!</h3><p>Final Score: ${score} / ${quizData.length}</p><button class="btn-action" onclick="resetQuiz()">Restart Quiz</button>`;
+        }
+    }
+    function resetQuiz() {
+        quizIndex = 0;
+        score = 0;
+        localStorage.setItem('quizScore', score);
+        location.reload();
+    }
+
+    // Dashboard
+    function updateDashboard() {
+        document.getElementById('prog-fc').innerText = masteredCards.length;
+        document.getElementById('prog-fc-tot').innerText = flashcardsData.length;
+    }
+    function resetProgress() {
+        localStorage.clear();
+        score = 0;
+        masteredCards = [];
+        alert("Progress reset.");
+        location.reload();
+    }
+
+    // Init
+    loadFC();
+    loadQuiz();
+    updateDashboard();
+</script>
+</body>
+</html>
